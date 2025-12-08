@@ -27,8 +27,8 @@ keywords = ["machine-learning", "clustering", "differential-privacy", "federated
 requires-python = ">=3.8"
 dependencies = [
     "numpy>=1.20.0",
-    "scikit-learn>=1.0.0",
-    "scipy>=1.7.0",
+    "scikit-learn>=1.0.1",
+    "scipy>=1.8.0",
     "diffprivlib>=0.6.0",
 ]
 
