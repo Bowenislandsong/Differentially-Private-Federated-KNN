@@ -19,7 +19,9 @@ def to_fixed(value):
     Returns:
         Integer value or array in fixed-point representation
     """
-    return np.int32(value * SCALE) % MOD
+    scaled = value * SCALE
+    # Use int64 first to avoid overflow, then modulo, then convert to int32
+    return np.int32(np.int64(scaled) % MOD)
 
 
 def to_int(value):
@@ -31,7 +33,8 @@ def to_int(value):
     Returns:
         Integer value or array modulo MOD
     """
-    return np.int32(value) % MOD
+    # Use int64 first to avoid overflow, then modulo, then convert to int32
+    return np.int32(np.int64(value) % MOD)
 
 
 def unscale(value):

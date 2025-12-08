@@ -33,7 +33,7 @@ def load_txt(path: str):
     return values_arr
 
 
-def shuffle_and_split(values, clients, proportions=None):
+def shuffle_and_split(values, clients, proportions=None, random_state=None):
     """Randomly shuffle data and split it among multiple clients.
     
     Args:
@@ -41,6 +41,7 @@ def shuffle_and_split(values, clients, proportions=None):
         clients (int): Number of clients to split the data among
         proportions (list of float, optional): Relative proportions for splitting data.
             If None, data is split equally. Defaults to None.
+        random_state (int or np.random.RandomState, optional): Random state for shuffling.
             
     Returns:
         list of np.ndarray: List of data arrays, one for each client
@@ -58,7 +59,18 @@ def shuffle_and_split(values, clients, proportions=None):
         prop_sum = sum(proportions)
         total = values.shape[0]
         sizes = [int(proportions[i] / prop_sum * total) for i in range(clients - 1)]
-    np.random.shuffle(values)
+    
+    # Use the provided random state for shuffling
+    if random_state is not None:
+        if isinstance(random_state, int):
+            rng = np.random.RandomState(random_state)
+        else:
+            rng = random_state
+        indices = rng.permutation(len(values))
+        values = values[indices]
+    else:
+        np.random.shuffle(values)
+    
     st = 0
     value_lists = []
     for client in range(clients - 1):

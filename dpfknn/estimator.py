@@ -204,7 +204,7 @@ class DPFederatedKMeans(BaseEstimator, ClusterMixin):
         
         # Split data among clients
         proportions = np.ones(self.n_clients) / self.n_clients
-        value_lists = shuffle_and_split(X_normalized, self.n_clients, proportions)
+        value_lists = shuffle_and_split(X_normalized, self.n_clients, proportions, random_state=self.random_state)
         
         # Run federated clustering protocol
         centroids, unassigned = self._run_protocol(value_lists, params)
