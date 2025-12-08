@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dpfknn"
+version = "0.1.0"
+description = "Differentially Private Federated K-Means Clustering"
+readme = "README.md"
+authors = [
+    {name = "Bowenislandsong", email = ""}
+]
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+keywords = ["machine-learning", "clustering", "differential-privacy", "federated-learning", "k-means"]
+requires-python = ">=3.8"
+dependencies = [
+    "numpy>=1.20.0",
+    "scikit-learn>=1.0.0",
+    "scipy>=1.7.0",
+    "diffprivlib>=0.6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=22.0.0",
+    "flake8>=5.0.0",
+    "mypy>=0.990",
+]
+examples = [
+    "matplotlib>=3.5.0",
+    "pandas>=1.3.0",
+    "seaborn>=0.11.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Bowenislandsong/Differentially-Private-Federated-KNN"
+Repository = "https://github.com/Bowenislandsong/Differentially-Private-Federated-KNN"
+Documentation = "https://github.com/Bowenislandsong/Differentially-Private-Federated-KNN#readme"
+"Bug Tracker" = "https://github.com/Bowenislandsong/Differentially-Private-Federated-KNN/issues"
+
+[tool.setuptools]
+packages = ["dpfknn", "dpfknn.configs", "dpfknn.data_io", "dpfknn.parties", "dpfknn.utils"]
+
+[tool.setuptools.package-data]
+dpfknn = ["py.typed"]
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311']
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
