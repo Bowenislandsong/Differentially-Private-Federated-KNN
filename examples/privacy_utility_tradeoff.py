@@ -61,7 +61,8 @@ def compare_privacy_budgets():
         ari = adjusted_rand_score(y_true, labels)
         try:
             sil = silhouette_score(X, labels)
-        except:
+        except ValueError:
+            # Silhouette score fails if all points are in one cluster
             sil = 0.0
         
         print(f"{eps:<10.1f} {ari:<10.4f} {sil:<12.4f} {kmeans.inertia_:<12.2f} {kmeans.n_iter_:<10}")

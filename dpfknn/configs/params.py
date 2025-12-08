@@ -162,7 +162,8 @@ class Params:
             delta = 1 / (n * np.log(n))
             rho = self.rho
             if self.dp == "laplace":
-                """From: https://github.com/IBM/differential-privacy-library/blob/main/diffprivlib/models/k_means.py"""
+                # Based on k-means convergence analysis from IBM differential privacy library [SU16]
+                # Source: https://github.com/IBM/differential-privacy-library/blob/main/diffprivlib/models/k_means.py
                 epsilon_m = np.sqrt(500 * (k ** 3) / (n ** 2) * (d + np.cbrt(4 * d * (rho ** 2))) ** 3)
                 iters = eps / epsilon_m
             elif "gaussian" in self.dp:
