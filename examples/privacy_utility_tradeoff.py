@@ -4,6 +4,8 @@ This example demonstrates the impact of different privacy budgets and
 constraint methods on clustering utility.
 """
 
+import time
+
 import numpy as np
 from sklearn.datasets import make_blobs
 from sklearn.metrics import adjusted_rand_score, silhouette_score
@@ -202,8 +204,6 @@ def scalability_test():
     print("\n" + "=" * 60)
     print("Scalability Test")
     print("=" * 60)
-    
-    import time
     
     data_sizes = [100, 500, 1000, 2000]
     

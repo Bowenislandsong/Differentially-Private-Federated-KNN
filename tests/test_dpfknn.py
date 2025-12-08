@@ -3,7 +3,6 @@
 import numpy as np
 import pytest
 from sklearn.datasets import make_blobs
-from sklearn.utils.estimator_checks import check_estimator
 
 from dpfknn import DPFederatedKMeans
 
