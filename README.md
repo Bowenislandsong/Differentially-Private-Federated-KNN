@@ -27,8 +27,8 @@ pip install -e .
 
 - Python >= 3.8
 - NumPy >= 1.20.0
-- scikit-learn >= 1.0.0
-- SciPy >= 1.7.0
+- scikit-learn >= 1.0.1
+- SciPy >= 1.8.0
 - diffprivlib >= 0.6.0
 
 ## Quick Start

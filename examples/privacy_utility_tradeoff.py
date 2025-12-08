@@ -35,25 +35,26 @@ def compare_privacy_budgets():
     print(f"{'Epsilon':<10} {'ARI':<10} {'Silhouette':<12} {'Inertia':<12} {'Iterations':<10}")
     print("-" * 60)
     
+    # Base configuration for all models
+    base_config = {
+        'n_clusters': 5,
+        'n_clients': 3,
+        'random_state': 42
+    }
+    
     results = []
     for eps in epsilons:
         if eps == 0.0:
             # No privacy
-            kmeans = DPFederatedKMeans(
-                n_clusters=5,
-                n_clients=3,
-                random_state=42
-            )
+            kmeans = DPFederatedKMeans(**base_config)
         else:
             # With privacy
             kmeans = DPFederatedKMeans(
-                n_clusters=5,
-                n_clients=3,
+                **base_config,
                 epsilon=eps,
                 dp_mechanism='gaussiananalytic',
                 constraint_method='diagonal_then_frac',
-                post_processing='fold',
-                random_state=42
+                post_processing='fold'
             )
         
         kmeans.fit(X)
