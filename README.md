@@ -1,5 +1,9 @@
 # Differentially Private Federated K-Means (dpfknn)
 
+[![PyPI version](https://badge.fury.io/py/dpfknn.svg)](https://badge.fury.io/py/dpfknn)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A scikit-learn compatible Python library for privacy-preserving federated k-means clustering with differential privacy.
 
 Based on the FastLloyd protocol: [D-Diaa/FastLloyd](https://github.com/D-Diaa/FastLloyd)
@@ -17,12 +21,35 @@ Based on the FastLloyd protocol: [D-Diaa/FastLloyd](https://github.com/D-Diaa/Fa
 
 ## Installation
 
+### From PyPI (recommended)
+
+```bash
+pip install dpfknn
+```
+
 ### From source
 
 ```bash
 git clone https://github.com/Bowenislandsong/Differentially-Private-Federated-KNN.git
 cd Differentially-Private-Federated-KNN
 pip install -e .
+```
+
+### Optional dependencies
+
+For running examples:
+```bash
+pip install dpfknn[examples]
+```
+
+For running benchmarks:
+```bash
+pip install dpfknn[benchmarks]
+```
+
+For development:
+```bash
+pip install dpfknn[dev]
 ```
 
 ### Dependencies
