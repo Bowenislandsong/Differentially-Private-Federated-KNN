@@ -7,6 +7,8 @@ Based on the FastLloyd protocol: [D-Diaa/FastLloyd](https://github.com/D-Diaa/Fa
 ## Features
 
 - **Scikit-learn Compatible API**: Follows standard sklearn conventions with `fit()`, `predict()`, `transform()`, and `score()` methods
+- **FastLloyd Protocol**: Direct access to the `local_proto` function for federated clustering
+- **Evaluation Metrics**: Comprehensive clustering quality metrics (NICV, BCSS, Silhouette, etc.)
 - **Differential Privacy**: Supports both Laplace and Gaussian mechanisms for privacy preservation
 - **Federated Learning**: Designed for horizontally partitioned data across multiple clients
 - **Secure Aggregation**: Optional masked computation for secure multi-party aggregation
@@ -30,6 +32,7 @@ pip install -e .
 - scikit-learn >= 1.0.1
 - SciPy >= 1.8.0
 - diffprivlib >= 0.6.0
+- tqdm >= 4.60.0
 
 ## Quick Start
 
@@ -122,6 +125,45 @@ pipeline = Pipeline([
 pipeline.fit(X)
 ```
 
+### Using FastLloyd Protocol Directly
+
+```python
+from dpfknn import local_proto, evaluate, Params
+from dpfknn.data_io import normalize, shuffle_and_split, unscale
+from sklearn.datasets import make_blobs
+from sklearn.cluster import KMeans
+
+# Generate and prepare data
+X, y = make_blobs(n_samples=500, centers=4, n_features=2, random_state=42)
+X_normalized = normalize(X, fixed=True)
+value_lists = shuffle_and_split(X_normalized, n_clients=3, random_state=42)
+
+# Configure parameters
+params = Params(
+    seed=42,
+    data_size=500,
+    dim=2,
+    k=4,
+    iters=6,
+    num_clients=3,
+    eps=1.0,
+    dp='gaussiananalytic',
+    method='diagonal_then_frac',
+    post='fold',
+    fixed=True
+)
+
+# Run the protocol
+centroids, unassigned = local_proto(value_lists, params, method="masked")
+centroids = unscale(centroids)
+
+# Evaluate clustering quality
+gt_centroids = KMeans(n_clusters=4).fit(X).cluster_centers_
+metrics = evaluate(centroids, X, gt_centroids, metrics="all")
+print(f"NICV: {metrics['Normalized Intra-cluster Variance (NICV)']:.4f}")
+print(f"MSE: {metrics['Mean Squared Error']:.4f}")
+```
+
 ## API Reference
 
 ### DPFederatedKMeans
@@ -159,11 +201,45 @@ Main estimator class for differentially private federated k-means clustering.
 - `fit_transform(X, y=None)`: Fit and transform in one step
 - `score(X, y=None)`: Opposite of inertia (for sklearn compatibility)
 
+### FastLloyd Protocol Functions
+
+Direct access to the FastLloyd protocol implementation.
+
+**local_proto(value_lists, params, method="masked")**
+
+Run the local federated clustering protocol (single-process simulation).
+
+Parameters:
+- `value_lists` (list): List of numpy arrays, one per client
+- `params` (Params): Configuration parameters
+- `method` (str): "masked" (privacy-preserving) or "unmasked"
+
+Returns:
+- `centroids` (np.ndarray): Final cluster centroids
+- `unassigned` (int): Number of unassigned points
+
+**evaluate(centroids, values, gt_centroids, metrics="nicv")**
+
+Evaluate clustering quality with multiple metrics.
+
+Parameters:
+- `centroids` (np.ndarray): Predicted cluster centroids
+- `values` (np.ndarray): Data points
+- `gt_centroids` (np.ndarray): Ground truth centroids
+- `metrics` (str or list): Metrics to compute (default: "nicv")
+
+Returns:
+- `dict`: Dictionary of computed metrics
+
+Available metrics: "nicv", "bcss", "empty_clusters", "silhouette", "davies_bouldin", "calinski_harabasz", "dunn_index", "mse", "all"
+
 ## Examples
 
 See the `examples/` directory for more detailed examples:
 
 - `basic_usage.py`: Comprehensive examples of all features
+- `privacy_utility_tradeoff.py`: Advanced privacy-utility analysis
+- `fastlloyd_protocol.py`: Direct use of FastLloyd protocol and evaluation metrics
 
 Run examples:
 

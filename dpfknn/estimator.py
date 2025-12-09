@@ -9,8 +9,8 @@ from sklearn.base import BaseEstimator, ClusterMixin
 from sklearn.utils.validation import check_array, check_is_fitted
 
 from .configs import Params
-from .data_io import normalize, shuffle_and_split
-from .parties import MaskedClient, UnmaskedClient, Server
+from .data_io import normalize, shuffle_and_split, unscale
+from .utils import local_proto
 from .utils import distance_matrix_squared
 
 
@@ -207,7 +207,12 @@ class DPFederatedKMeans(BaseEstimator, ClusterMixin):
         value_lists = shuffle_and_split(X_normalized, self.n_clients, proportions, random_state=self.random_state)
         
         # Run federated clustering protocol
-        centroids, unassigned = self._run_protocol(value_lists, params)
+        method = "masked" if self.use_masking else "unmasked"
+        centroids, unassigned = local_proto(value_lists, params, method=method)
+        
+        # Unscale centroids if using fixed-point arithmetic
+        if self.fixed_point:
+            centroids = unscale(centroids)
         
         # Store results
         self.cluster_centers_ = centroids
@@ -219,56 +224,6 @@ class DPFederatedKMeans(BaseEstimator, ClusterMixin):
         self.inertia_ = self._compute_inertia(X, centroids, self.labels_)
         
         return self
-        
-    def _run_protocol(self, value_lists, params):
-        """Run the federated clustering protocol.
-        
-        Parameters
-        ----------
-        value_lists : list of np.ndarray
-            Data split among clients.
-            
-        params : Params
-            Configuration parameters.
-            
-        Returns
-        -------
-        centroids : np.ndarray
-            Final cluster centers.
-            
-        unassigned : int
-            Number of unassigned points.
-        """
-        # Initialize clients and server
-        if self.use_masking:
-            clients = [MaskedClient(i, values, params) for i, values in enumerate(value_lists)]
-        else:
-            clients = [UnmaskedClient(i, values, params) for i, values in enumerate(value_lists)]
-        
-        server = Server(params)
-        
-        # Run iterations
-        total_unassigned = 0
-        for iteration in range(params.iters):
-            # Update max distance for this iteration
-            params.update_maxdist(iteration)
-            
-            # Client step: compute local statistics
-            client_results = [client.step(params) for client in clients]
-            sums = [result[0] for result in client_results]
-            counts = [result[1] for result in client_results]
-            unassigned_counts = [result[2] for result in client_results]
-            total_unassigned = sum(unassigned_counts)
-            
-            # Server step: aggregate and add DP noise
-            aggregated_sum, aggregated_count = server.step(sums, counts, params)
-            
-            # Client update: update centroids
-            for client in clients:
-                client.update(aggregated_sum, aggregated_count)
-        
-        # Return centroids from first client (all clients have the same centroids)
-        return clients[0].centroids, total_unassigned
         
     def predict(self, X):
         """Predict the closest cluster each sample in X belongs to.

@@ -8,5 +8,6 @@ __version__ = "0.1.0"
 
 from .estimator import DPFederatedKMeans
 from .configs import Params
+from .utils import local_proto, evaluate
 
-__all__ = ['DPFederatedKMeans', 'Params']
+__all__ = ['DPFederatedKMeans', 'Params', 'local_proto', 'evaluate']

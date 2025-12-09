@@ -4,7 +4,8 @@ import numpy as np
 import pytest
 from sklearn.datasets import make_blobs
 
-from dpfknn import DPFederatedKMeans
+from dpfknn import DPFederatedKMeans, local_proto, evaluate, Params
+from dpfknn.data_io import normalize, shuffle_and_split, unscale
 
 
 def test_basic_clustering():
@@ -138,6 +139,52 @@ def test_reproducibility():
         kmeans1.cluster_centers_,
         kmeans2.cluster_centers_
     )
+
+
+def test_local_proto():
+    """Test the local_proto function directly."""
+    X, y = make_blobs(n_samples=100, centers=3, n_features=2, random_state=42)
+    
+    # Normalize and split data
+    X_normalized = normalize(X, fixed=True)
+    value_lists = shuffle_and_split(X_normalized, 2, random_state=42)
+    
+    # Create parameters
+    params = Params(
+        seed=42,
+        data_size=100,
+        dim=2,
+        k=3,
+        iters=3,
+        num_clients=2,
+        fixed=True
+    )
+    
+    # Run protocol
+    centroids, unassigned = local_proto(value_lists, params, method="unmasked")
+    centroids = unscale(centroids)
+    
+    assert centroids.shape == (3, 2)
+    assert isinstance(unassigned, (int, np.integer))
+    assert unassigned >= 0
+
+
+def test_evaluate_metrics():
+    """Test the evaluate function."""
+    X, y = make_blobs(n_samples=100, centers=3, n_features=2, random_state=42)
+    
+    # Create some centroids
+    from sklearn.cluster import KMeans
+    gt_centroids = KMeans(n_clusters=3, random_state=42).fit(X).cluster_centers_
+    pred_centroids = gt_centroids + np.random.randn(*gt_centroids.shape) * 0.1
+    
+    # Test single metric
+    metrics = evaluate(pred_centroids, X, gt_centroids, metrics="nicv")
+    assert "Normalized Intra-cluster Variance (NICV)" in metrics
+    
+    # Test all metrics
+    all_metrics = evaluate(pred_centroids, X, gt_centroids, metrics="all")
+    assert len(all_metrics) >= 6  # Should have multiple metrics
 
 
 if __name__ == "__main__":
