@@ -296,6 +296,42 @@ The library provides formal differential privacy guarantees:
 
 Privacy budget is automatically split between sum and count queries based on dimensionality.
 
+## Performance & Benchmarks
+
+We provide comprehensive benchmarks comparing DPFederatedKMeans against sklearn's KMeans and demonstrating privacy-utility tradeoffs.
+
+### Benchmark Results
+
+Run benchmarks yourself:
+```bash
+python benchmarks/run_benchmarks.py
+```
+
+This generates:
+- **Performance comparison tables**: DPFedKMeans vs sklearn KMeans on Iris, Wine, Breast Cancer, and synthetic datasets
+- **Privacy-utility tradeoff analysis**: Impact of different privacy budgets (ε) on clustering quality
+- **Visualizations**: Charts showing clustering quality (ARI, NMI), runtime, and utility loss
+
+Key findings:
+- **Clustering Quality**: Competitive with sklearn KMeans on real datasets
+- **Privacy-Utility Tradeoff**: With ε=1.0, maintains good utility with strong privacy
+- **Runtime**: Comparable to centralized approaches for small-to-medium datasets
+- **Federation Benefits**: Enables collaborative clustering without centralizing sensitive data
+
+See detailed results in [`reports/BENCHMARK_REPORT.md`](reports/BENCHMARK_REPORT.md).
+
+### Method Comparison
+
+![Method Comparison](reports/method_comparison.png)
+
+### Privacy-Utility Tradeoff
+
+![Privacy-Utility Tradeoff](reports/privacy_utility_tradeoff.png)
+
+### Utility Loss vs Privacy Budget
+
+![Utility Loss](reports/utility_loss.png)
+
 ## Performance Considerations
 
 - **Masking**: Adds computational overhead but provides security against honest-but-curious server

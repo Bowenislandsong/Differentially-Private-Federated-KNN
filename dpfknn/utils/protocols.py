@@ -88,4 +88,4 @@ def local_proto(value_lists, params: Params, method="masked"):
         centroids = clients[0].centroids
         centroid_history.append(centroids)
 
-    return to_fixed(centroids), unassigned_last_iter
+    return centroids, unassigned_last_iter
