@@ -1,0 +1,22 @@
+# Include important documentation files
+include README.md
+include LICENSE
+include requirements.txt
+
+# Include configuration files
+include pyproject.toml
+
+# Include examples and benchmarks
+recursive-include examples *.py
+recursive-include benchmarks *.py
+
+# Include reports
+recursive-include reports *.md *.png *.txt
+
+# Include tests
+recursive-include tests *.py
+
+# Exclude build artifacts and cache
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude .DS_Store

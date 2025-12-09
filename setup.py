@@ -1,10 +1,10 @@
-"""Setup script for dpfknn package."""
+"""Setup script for dpfknn package.
 
-from setuptools import setup, find_packages
+This file is kept for backward compatibility, but all configuration
+is now in pyproject.toml following PEP 517/518.
+"""
 
-setup(
-    name="dpfknn",
-    version="0.1.0",
-    packages=find_packages(),
-    python_requires=">=3.8",
-)
+from setuptools import setup
+
+# All configuration is in pyproject.toml
+setup()
